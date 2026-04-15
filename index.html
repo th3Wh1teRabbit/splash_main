@@ -51,7 +51,7 @@
     .frame::before {
       content: "";
       position: absolute;
-      inset: 18px;
+      inset: 8px 18px 18px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 28px;
       box-shadow:
@@ -71,6 +71,7 @@
     .hero-inner {
       width: min(100%, 640px);
       margin: 0 auto;
+      padding-inline: 0;
       display: grid;
       justify-items: center;
       text-align: center;
@@ -297,7 +298,7 @@
       }
 
       .frame::before {
-        inset: 8px;
+        inset: 6px 8px 8px;
         border-radius: 20px;
       }
 
@@ -308,6 +309,7 @@
 
       .hero-inner {
         width: min(100%, 304px);
+        padding-inline: 10px;
       }
 
       .eyebrow {
@@ -441,18 +443,30 @@
     (function () {
       const fitTargets = Array.from(document.querySelectorAll("[data-fit-text]"));
 
+      function getContentWidth(element) {
+        if (!element) {
+          return 0;
+        }
+
+        const styles = window.getComputedStyle(element);
+        const paddingLeft = Number.parseFloat(styles.paddingLeft) || 0;
+        const paddingRight = Number.parseFloat(styles.paddingRight) || 0;
+        return Math.max(0, element.clientWidth - paddingLeft - paddingRight);
+      }
+
       function fitElement(el) {
-        const parent = el.hasAttribute("data-fit-group") ? el : el.parentElement;
+        const parent = el.parentElement;
+        const fitRoot = el.closest(".hero-inner");
         const minSize = Number(el.dataset.fitText || 0.7);
         const computed = window.getComputedStyle(el);
         const baseSize = Number.parseFloat(computed.fontSize);
-        if (!parent || !baseSize) {
+        if (!parent || !fitRoot || !baseSize) {
           return;
         }
 
         el.style.fontSize = "";
         let size = baseSize;
-        const availableWidth = parent.clientWidth;
+        const availableWidth = Math.min(getContentWidth(parent), getContentWidth(fitRoot));
         if (!availableWidth) {
           return;
         }
@@ -465,6 +479,7 @@
 
       function fitStatement(statement) {
         const text = statement.querySelector("[data-fit-text]");
+        const fitRoot = statement.closest(".hero-inner");
         if (!text) {
           return;
         }
@@ -472,14 +487,18 @@
         const minSize = Number(text.dataset.fitText || 0.9);
         const computed = window.getComputedStyle(text);
         const baseSize = Number.parseFloat(computed.fontSize);
-        if (!baseSize) {
+        if (!fitRoot || !baseSize) {
           return;
         }
 
         text.style.fontSize = "";
         let size = baseSize;
+        const availableWidth = getContentWidth(fitRoot);
+        if (!availableWidth) {
+          return;
+        }
 
-        while (statement.scrollWidth > statement.clientWidth && size > minSize) {
+        while (statement.scrollWidth > availableWidth && size > minSize) {
           size = Math.max(minSize, size - 0.5);
           text.style.fontSize = size + "px";
         }

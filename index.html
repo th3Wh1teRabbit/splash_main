@@ -281,48 +281,114 @@
 
     @media (max-width: 640px) {
       body {
-        overflow: auto;
+        overflow: hidden;
       }
 
       .frame {
-        min-height: 100svh;
-        padding: 20px;
+        width: 100%;
+        min-height: 100dvh;
+        padding: 14px 16px;
       }
 
       .frame::before {
-        inset: 10px;
-        border-radius: 22px;
+        inset: 8px;
+        border-radius: 20px;
       }
 
       .hero {
-        padding: 10px;
+        width: 100%;
+        padding: 4px 0;
       }
 
       .hero-inner {
-        width: 100%;
+        width: min(100%, 304px);
+      }
+
+      .eyebrow {
+        margin-bottom: 0.7rem;
+      }
+
+      .eyebrow span {
+        letter-spacing: 0.18em;
+        padding-left: 0.18em;
+        margin-right: -0.18em;
+      }
+
+      .crest {
+        width: clamp(72px, 22vw, 92px);
+        margin-bottom: 14px;
+      }
+
+      .title-lockup {
+        gap: 8px;
+      }
+
+      .headline-main {
+        font-size: clamp(1.95rem, 11.5cqw, 2.7rem);
+      }
+
+      .headline-sub {
+        font-size: clamp(0.72rem, 4.4cqw, 0.92rem);
       }
 
       .description {
+        font-size: 0.84rem;
         letter-spacing: 0.24em;
       }
 
-      .eyebrow span,
-      .service span,
-      .invitation span,
       .headline-main span,
-      .headline-sub span,
       .statement-copy {
-        letter-spacing: 0.24em;
-        padding-left: 0.24em;
-        margin-right: -0.24em;
+        letter-spacing: 0.08em;
+        padding-left: 0.08em;
+        margin-right: -0.08em;
+      }
+
+      .headline-sub span {
+        letter-spacing: 0.22em;
+        padding-left: 0.22em;
+        margin-right: -0.22em;
       }
 
       .statement {
-        gap: 10px;
+        width: 100%;
+        gap: 8px;
+      }
+
+      .triangle {
+        width: 24px;
+        height: 20px;
       }
 
       .statement-text {
+        font-size: clamp(1rem, 5.6cqw, 1.35rem);
         white-space: normal;
+      }
+
+      .divider {
+        width: min(100%, 240px);
+        margin: 16px auto;
+      }
+
+      .service {
+        margin-top: 18px;
+        font-size: clamp(0.8rem, 4.2cqw, 0.95rem);
+      }
+
+      .service span {
+        letter-spacing: 0.18em;
+        padding-left: 0.18em;
+        margin-right: -0.18em;
+      }
+
+      .invitation {
+        margin-top: 0.75rem;
+        font-size: clamp(0.68rem, 3.2cqw, 0.82rem);
+      }
+
+      .invitation span {
+        letter-spacing: 0.14em;
+        padding-left: 0.14em;
+        margin-right: -0.14em;
       }
     }
 

@@ -67,6 +67,8 @@
     .hero {
       width: min(100%, 760px);
       padding: clamp(16px, 2vw, 24px);
+      display: grid;
+      justify-items: center;
       position: relative;
       z-index: 1;
     }
@@ -440,7 +442,10 @@
       }
 
       .hero {
+        min-height: 100%;
         padding: 0;
+        place-items: center;
+        align-content: center;
       }
 
       .hero-inner {

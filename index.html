@@ -77,6 +77,10 @@
       container-type: inline-size;
     }
 
+    .hero-inner > * {
+      max-width: 100%;
+    }
+
     .eyebrow {
       margin: 0 0 1rem;
       font-size: clamp(0.78rem, 1.2vw, 0.96rem);
@@ -223,6 +227,8 @@
       line-height: 1.12;
       text-transform: uppercase;
       white-space: nowrap;
+      flex: 0 1 auto;
+      min-width: 0;
     }
 
     .statement-copy {
@@ -412,25 +418,88 @@
   <main class="frame">
     <section class="hero" aria-label="Splash page content">
       <div class="hero-inner">
-        <p class="eyebrow"><span>By Invitation Only</span></p>
+        <p class="eyebrow" data-fit-text="0.78"><span>By Invitation Only</span></p>
         <div class="crest" aria-hidden="true"></div>
 
         <div class="title-lockup">
-          <h1 class="headline-main"><span>Psychological</span></h1>
-          <p class="headline-sub"><span>Research and Development</span></p>
+          <h1 class="headline-main" data-fit-text="2"><span>Psychological</span></h1>
+          <p class="headline-sub" data-fit-text="0.72"><span>Research and Development</span></p>
         </div>
 
         <div class="divider" aria-hidden="true"></div>
 
-        <div class="statement" aria-label="Unlock potential">
+        <div class="statement" aria-label="Unlock potential" data-fit-group>
           <span class="triangle outline" aria-hidden="true"></span>
-          <p class="statement-text"><span class="statement-copy">Unlock. <span class="accent">Potential.</span></span></p>
+          <p class="statement-text" data-fit-text="1"><span class="statement-copy">Unlock. <span class="accent">Potential.</span></span></p>
           <span class="triangle filled" aria-hidden="true"></span>
         </div>
-
 
       </div>
     </section>
   </main>
+  <script>
+    (function () {
+      const fitTargets = Array.from(document.querySelectorAll("[data-fit-text]"));
+
+      function fitElement(el) {
+        const parent = el.hasAttribute("data-fit-group") ? el : el.parentElement;
+        const minSize = Number(el.dataset.fitText || 0.7);
+        const computed = window.getComputedStyle(el);
+        const baseSize = Number.parseFloat(computed.fontSize);
+        if (!parent || !baseSize) {
+          return;
+        }
+
+        el.style.fontSize = "";
+        let size = baseSize;
+        const availableWidth = parent.clientWidth;
+        if (!availableWidth) {
+          return;
+        }
+
+        while (el.scrollWidth > availableWidth && size > minSize) {
+          size = Math.max(minSize, size - 0.5);
+          el.style.fontSize = size + "px";
+        }
+      }
+
+      function fitStatement(statement) {
+        const text = statement.querySelector("[data-fit-text]");
+        if (!text) {
+          return;
+        }
+
+        const minSize = Number(text.dataset.fitText || 0.9);
+        const computed = window.getComputedStyle(text);
+        const baseSize = Number.parseFloat(computed.fontSize);
+        if (!baseSize) {
+          return;
+        }
+
+        text.style.fontSize = "";
+        let size = baseSize;
+
+        while (statement.scrollWidth > statement.clientWidth && size > minSize) {
+          size = Math.max(minSize, size - 0.5);
+          text.style.fontSize = size + "px";
+        }
+      }
+
+      function refitAll() {
+        fitTargets.forEach((el) => {
+          if (!el.closest("[data-fit-group]")) {
+            fitElement(el);
+          }
+        });
+
+        document.querySelectorAll("[data-fit-group]").forEach(fitStatement);
+      }
+
+      window.addEventListener("load", refitAll);
+      window.addEventListener("resize", refitAll);
+      window.addEventListener("orientationchange", refitAll);
+      refitAll();
+    })();
+  </script>
 </body>
 </html>

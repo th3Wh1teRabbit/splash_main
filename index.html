@@ -39,6 +39,9 @@
     }
 
     .frame {
+      --card-inset-top: 8px;
+      --card-inset-x: 18px;
+      --card-inset-bottom: 18px;
       width: min(100%, 1000px);
       min-height: 100vh;
       display: grid;
@@ -51,7 +54,7 @@
     .frame::before {
       content: "";
       position: absolute;
-      inset: 8px 18px 18px;
+      inset: var(--card-inset-top) var(--card-inset-x) var(--card-inset-bottom);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 28px;
       box-shadow:
@@ -69,6 +72,7 @@
     }
 
     .hero-inner {
+      --fit-scale: 1;
       width: min(100%, 640px);
       margin: 0 auto;
       padding-inline: 0;
@@ -76,6 +80,8 @@
       justify-items: center;
       text-align: center;
       container-type: inline-size;
+      transform: scale(var(--fit-scale));
+      transform-origin: top center;
     }
 
     .hero-inner > * {
@@ -286,7 +292,7 @@
       font-weight: 400;
     }
 
-    @media (max-width: 640px) {
+    @media (pointer: coarse) and (max-width: 932px) {
       body {
         min-height: 100svh;
         overflow: hidden;
@@ -294,6 +300,9 @@
       }
 
       .frame {
+        --card-inset-top: 6px;
+        --card-inset-x: 8px;
+        --card-inset-bottom: 8px;
         width: 100%;
         height: 100svh;
         min-height: 100svh;
@@ -302,7 +311,6 @@
       }
 
       .frame::before {
-        inset: 6px 8px 8px;
         border-radius: 20px;
       }
 
@@ -419,13 +427,15 @@
       }
     }
 
-    @media (max-width: 640px) and (max-height: 500px) {
+    @media (pointer: coarse) and (max-width: 932px) and (max-height: 500px) {
       .frame {
+        --card-inset-top: 4px;
+        --card-inset-x: 6px;
+        --card-inset-bottom: 6px;
         padding: 8px 12px;
       }
 
       .frame::before {
-        inset: 4px 6px 6px;
         border-radius: 16px;
       }
 
@@ -529,6 +539,7 @@
   <script>
     (function () {
       const fitTargets = Array.from(document.querySelectorAll("[data-fit-text]"));
+      const fitRoots = Array.from(document.querySelectorAll(".hero-inner"));
 
       function getContentWidth(element) {
         if (!element) {
@@ -539,6 +550,10 @@
         const paddingLeft = Number.parseFloat(styles.paddingLeft) || 0;
         const paddingRight = Number.parseFloat(styles.paddingRight) || 0;
         return Math.max(0, element.clientWidth - paddingLeft - paddingRight);
+      }
+
+      function getNumericVar(element, name) {
+        return Number.parseFloat(window.getComputedStyle(element).getPropertyValue(name)) || 0;
       }
 
       function fitElement(el) {
@@ -591,7 +606,36 @@
         }
       }
 
+      function fitHeight(root) {
+        const frame = root.closest(".frame");
+        if (!frame) {
+          return;
+        }
+
+        root.style.setProperty("--fit-scale", "1");
+
+        const availableWidth = getContentWidth(root);
+        const availableHeight =
+          frame.clientHeight -
+          getNumericVar(frame, "--card-inset-top") -
+          getNumericVar(frame, "--card-inset-bottom");
+
+        if (!availableWidth || !availableHeight) {
+          return;
+        }
+
+        const widthScale = Math.min(1, availableWidth / root.scrollWidth);
+        const heightScale = Math.min(1, availableHeight / root.scrollHeight);
+        const scale = Math.min(widthScale, heightScale);
+
+        root.style.setProperty("--fit-scale", String(scale));
+      }
+
       function refitAll() {
+        fitRoots.forEach((root) => {
+          root.style.setProperty("--fit-scale", "1");
+        });
+
         fitTargets.forEach((el) => {
           if (!el.closest("[data-fit-group]")) {
             fitElement(el);
@@ -599,6 +643,7 @@
         });
 
         document.querySelectorAll("[data-fit-group]").forEach(fitStatement);
+        fitRoots.forEach(fitHeight);
       }
 
       window.addEventListener("load", refitAll);

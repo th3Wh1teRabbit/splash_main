@@ -307,7 +307,7 @@
         height: 100svh;
         min-height: 100svh;
         padding: 14px 16px;
-        place-items: start center;
+        place-items: center;
       }
 
       .frame::before {
@@ -409,6 +409,12 @@
         letter-spacing: 0.14em;
         padding-left: 0.14em;
         margin-right: -0.14em;
+      }
+    }
+
+    @media (pointer: coarse) and (max-width: 932px) and (orientation: landscape) {
+      .frame {
+        place-items: start center;
       }
     }
 
@@ -552,6 +558,17 @@
         return Math.max(0, element.clientWidth - paddingLeft - paddingRight);
       }
 
+      function getContentHeight(element) {
+        if (!element) {
+          return 0;
+        }
+
+        const styles = window.getComputedStyle(element);
+        const paddingTop = Number.parseFloat(styles.paddingTop) || 0;
+        const paddingBottom = Number.parseFloat(styles.paddingBottom) || 0;
+        return Math.max(0, element.clientHeight - paddingTop - paddingBottom);
+      }
+
       function getNumericVar(element, name) {
         return Number.parseFloat(window.getComputedStyle(element).getPropertyValue(name)) || 0;
       }
@@ -616,7 +633,7 @@
 
         const availableWidth = getContentWidth(root);
         const availableHeight =
-          frame.clientHeight -
+          getContentHeight(frame) -
           getNumericVar(frame, "--card-inset-top") -
           getNumericVar(frame, "--card-inset-bottom");
 
